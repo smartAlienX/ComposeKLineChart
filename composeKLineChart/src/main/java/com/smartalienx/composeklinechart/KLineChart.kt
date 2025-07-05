@@ -41,6 +41,7 @@ import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.Indicator
 import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
 import com.smartalienx.composeklinechart.model.indicator.SMAIndicator
+import com.smartalienx.composeklinechart.model.indicator.VolumeIndicator
 import kotlin.random.Random
 
 @Composable
@@ -140,7 +141,6 @@ fun KLineChart(
                 )
             }
 
-
             mainChartDrawer.onPreDraw(mainRect, timeAxisHelper, chartConfig, canvasParams, dataManager)
             timeAxisDrawer.onPreDraw(timeAxisRect, timeAxisHelper, chartConfig, canvasParams, dataManager)
 
@@ -184,7 +184,7 @@ fun KLineChart(
 @Composable
 @Preview
 fun KLineChartPreview() {
-    val sampleData = List(10000) { index ->
+    val sampleData = List(100) { index ->
 
         val high = Random.nextInt(100) + 50
 
@@ -194,6 +194,8 @@ fun KLineChartPreview() {
             override val high: Float = high * 1f
             override val low: Float = high - 50f
             override val close: Float = high - Random.nextInt(0, 49).toFloat()
+            override val volume: Float = Random.nextInt(100, 1000).toFloat()
+            override val turnover: Float = Random.nextInt(1000, 10000).toFloat()
         }
     }.sortedBy { it.time }
     KLineChart(
@@ -212,7 +214,8 @@ fun KLineChartPreview() {
                     IndicatorSeries.SMA(30, 0xFF6200EE.toInt()),
                     IndicatorSeries.SMA(50, 0xFF3FB5BD.toInt()),
                 )
-            )
+            ),
+            VolumeIndicator()
         )
     )
 }

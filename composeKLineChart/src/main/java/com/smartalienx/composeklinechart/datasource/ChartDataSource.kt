@@ -11,6 +11,7 @@ class ChartDataManager : KLineDataSource {
 
     init {
         registerSource(IndicatorSeries.SMA::class, SMASeriesSource())
+        registerSource(IndicatorSeries.Volume::class, VolumeSeriesSource())
     }
 
     fun <S : IndicatorSeries> registerSource(seriesClass: KClass<S>, seriesDataSource: IndicatorSeriesSource<*, *>) {

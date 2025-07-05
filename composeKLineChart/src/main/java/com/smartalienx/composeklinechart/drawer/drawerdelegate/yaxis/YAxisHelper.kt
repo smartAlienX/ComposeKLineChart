@@ -21,7 +21,7 @@ class YAxisHelper : YAxisValueConversion {
     override fun valueToY(value: Float): Float {
         if (maxValue == minValue) return topY
         val ratio = (value - minValue) / (maxValue - minValue)
-        return topY + ratio * (bottomY - topY)
+        return bottomY - ratio * (bottomY - topY)
     }
 
     override fun yToValue(y: Float): Float {

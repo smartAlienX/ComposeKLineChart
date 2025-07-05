@@ -93,7 +93,7 @@ class SMAIndicatorDrawer(
         }
 
         if (indicator.isAddToMainChart.not()) {
-            yAxisDrawer.drawYAxis(canvas, rect, canvasParams, config.mainChart.yAxis, config.grid)
+            yAxisDrawer.drawYAxis(canvas, rect, canvasParams, config.mainChart.yAxis, config)
         }
     }
 }

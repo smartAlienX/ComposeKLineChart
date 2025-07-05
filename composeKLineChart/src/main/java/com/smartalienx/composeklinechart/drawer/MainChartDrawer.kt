@@ -67,7 +67,7 @@ class MainChartDrawer(
             dataList = barList
         )
 
-        yAxisDrawer.drawYAxis(canvas, rect, canvasParams, config.mainChart.yAxis, config.grid)
+        yAxisDrawer.drawYAxis(canvas, rect, canvasParams, config.mainChart.yAxis, config)
     }
 
     override fun getYMaxValue(): Float {

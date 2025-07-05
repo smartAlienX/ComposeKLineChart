@@ -9,7 +9,7 @@ import com.smartalienx.composeklinechart.model.config.ChartConfig
 
 interface YAxisDrawerDelegate : YAxisValueConversion {
 
-    fun drawYAxis(canvas: Canvas, rect: Rect, canvasParams: CanvasParams, yAxisConfig: ChartConfig.YAxis, grid: ChartConfig.Grid)
+    fun drawYAxis(canvas: Canvas, rect: Rect, canvasParams: CanvasParams, yAxisConfig: ChartConfig.YAxis, chartConfig: ChartConfig)
 
     fun setYAxisMinMaxValue(minValue: Float, maxValue: Float)
 
@@ -22,7 +22,7 @@ class DefaultYAxisDrawer : YAxisDrawerDelegate {
 
     private val nativePaint by lazy { android.graphics.Paint() }
 
-    override fun drawYAxis(canvas: Canvas, rect: Rect, canvasParams: CanvasParams, yAxisConfig: ChartConfig.YAxis, grid: ChartConfig.Grid) {
+    override fun drawYAxis(canvas: Canvas, rect: Rect, canvasParams: CanvasParams, yAxisConfig: ChartConfig.YAxis, chartConfig: ChartConfig) {
         nativePaint.apply {
             isAntiAlias = true
             textSize = yAxisConfig.textSizeSp * canvasParams.density
@@ -31,12 +31,11 @@ class DefaultYAxisDrawer : YAxisDrawerDelegate {
 
         val textHeight = nativePaint.getTextHeight()
         for (i in 0 until yAxisConfig.count) {
-            var y = rect.top + (rect.height / (yAxisConfig.count - 1)) * i
+            val y = rect.top + (rect.height / (yAxisConfig.count - 1)) * i
+            val value = chartConfig.valueFormat.formatValue(yAxisHelper.yToValue(y))
 
-            if (i == 0) y += textHeight
-
-            val value = yAxisHelper.yToValue(y)
-            canvas.nativeCanvas.drawText(value.toString(), 0f, y - 2f * canvasParams.density, nativePaint)
+            val textY = if (i == 0) y + textHeight else y
+            canvas.nativeCanvas.drawText(value, 0f, textY - 2f * canvasParams.density, nativePaint)
         }
     }
 

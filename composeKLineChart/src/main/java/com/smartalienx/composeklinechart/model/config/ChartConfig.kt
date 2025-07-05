@@ -2,17 +2,20 @@ package com.smartalienx.composeklinechart.model.config
 
 import com.smartalienx.composeklinechart.ChartDefaultColor
 import com.smartalienx.composeklinechart.format.DefaultTimeFormat
+import com.smartalienx.composeklinechart.format.DefaultValueFormat
 import com.smartalienx.composeklinechart.format.TimeFormat
+import com.smartalienx.composeklinechart.format.ValueFormat
 import java.util.TimeZone
 
 data class ChartConfig(
     val timeZone: TimeZone = TimeZone.getDefault(),
     val mainChart: MainChart = MainChart(),
-    val subChartScale: Float = 0.7f,
+    val subChartScale: Float = 0.5f,
     val grid: Grid = Grid(),
     val upColor: Int = ChartDefaultColor.UP_RED,
     val downColor: Int = ChartDefaultColor.DOWN_GREEN,
     val timeAxis: TimeAxis = TimeAxis(timeFormat = DefaultTimeFormat(timeZone)),
+    val valueFormat: ValueFormat = DefaultValueFormat(),
 ) {
 
     data class MainChart(

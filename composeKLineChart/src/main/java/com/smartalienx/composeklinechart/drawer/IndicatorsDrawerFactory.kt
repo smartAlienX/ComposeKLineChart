@@ -2,8 +2,10 @@ package com.smartalienx.composeklinechart.drawer
 
 import com.smartalienx.composeklinechart.drawer.indicatordrawer.IndicatorCanvasDrawer
 import com.smartalienx.composeklinechart.drawer.indicatordrawer.SMAIndicatorDrawer
+import com.smartalienx.composeklinechart.drawer.indicatordrawer.VolumeIndicatorDrawer
 import com.smartalienx.composeklinechart.model.indicator.Indicator
 import com.smartalienx.composeklinechart.model.indicator.SMAIndicator
+import com.smartalienx.composeklinechart.model.indicator.VolumeIndicator
 
 class IndicatorsDrawerFactory(
     private val drawerBuilder: ((indicator: Indicator) -> IndicatorCanvasDrawer<*>)? = null
@@ -31,6 +33,7 @@ class IndicatorsDrawerFactory(
                 drawer = when (it) {
                     // Add other indicators here as needed
                     is SMAIndicator -> SMAIndicatorDrawer()
+                    is VolumeIndicator -> VolumeIndicatorDrawer()
                     else -> throw IllegalArgumentException("No drawer found for indicator: $it")
                 }
             }
