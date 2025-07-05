@@ -3,7 +3,7 @@ package com.smartalienx.composeklinechart.drawer
 import com.smartalienx.composeklinechart.drawer.indicatordrawer.IndicatorCanvasDrawer
 import com.smartalienx.composeklinechart.drawer.indicatordrawer.SMAIndicatorDrawer
 import com.smartalienx.composeklinechart.model.indicator.Indicator
-import com.smartalienx.composeklinechart.model.indicator.MAIndicator
+import com.smartalienx.composeklinechart.model.indicator.SMAIndicator
 
 class IndicatorsDrawerFactory(
     private val drawerBuilder: ((indicator: Indicator) -> IndicatorCanvasDrawer<*>)? = null
@@ -30,7 +30,7 @@ class IndicatorsDrawerFactory(
             if (drawer == null) {
                 drawer = when (it) {
                     // Add other indicators here as needed
-                    is MAIndicator -> SMAIndicatorDrawer()
+                    is SMAIndicator -> SMAIndicatorDrawer()
                     else -> throw IllegalArgumentException("No drawer found for indicator: $it")
                 }
             }

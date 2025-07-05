@@ -8,24 +8,39 @@ interface Indicator {
 
     val isAddToMainChart: Boolean
 
-    val series: List<Series>
+    val series: List<IndicatorSeries>
 
     val yAxisConfig: ChartConfig.YAxis
 
-    interface Series {
-        val seriesId: String
-        fun paramsCode(): String
+    companion object {
+        const val SMA = "Indicator-SMA"
+        const val VOLUME = "Indicator-VOL"
+    }
+}
 
-        fun uniqueId(): String {
-            return "$seriesId-${paramsCode()}"
-        }
+interface IndicatorSeries {
 
-        companion object {
-            const val SMA = "SMA"
-        }
+    fun paramsCode(): String
+
+    fun uniqueId(): String {
+        return "${this::class.simpleName}-${paramsCode()}"
     }
 
-    companion object {
-        const val SMA = "SMA-Indicator"
+    data class SMA(
+        override val period: Int,
+        override val color: Int,
+        override val lineWidthDp: Float = 1F
+    ) : MA(period, color, lineWidthDp)
+
+
+
+    abstract class MA(
+        open val period: Int,
+        open val color: Int,
+        open val lineWidthDp: Float = 1F
+    ) : IndicatorSeries {
+        override fun paramsCode(): String {
+            return period.toString()
+        }
     }
 }

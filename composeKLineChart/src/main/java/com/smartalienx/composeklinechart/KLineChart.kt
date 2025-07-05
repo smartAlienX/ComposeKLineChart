@@ -39,7 +39,7 @@ import com.smartalienx.composeklinechart.model.TimeInterval
 import com.smartalienx.composeklinechart.model.charttype.ChartType
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.Indicator
-import com.smartalienx.composeklinechart.model.indicator.MAIndicator.Series
+import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
 import com.smartalienx.composeklinechart.model.indicator.SMAIndicator
 import kotlin.random.Random
 
@@ -206,11 +206,11 @@ fun KLineChartPreview() {
             SMAIndicator(
                 isAddToMainChart = true,
                 series = listOf(
-                    Series(1, 0xFFFF337C.toInt()),
-                    Series(5, 0xFFF69234.toInt()),
-                    Series(10, 0xFF83BD3F.toInt()),
-                    Series(30, 0xFF6200EE.toInt()),
-                    Series(50, 0xFF3FB5BD.toInt()),
+                    IndicatorSeries.SMA(1, 0xFFFF337C.toInt()),
+                    IndicatorSeries.SMA(5, 0xFFF69234.toInt()),
+                    IndicatorSeries.SMA(10, 0xFF83BD3F.toInt()),
+                    IndicatorSeries.SMA(30, 0xFF6200EE.toInt()),
+                    IndicatorSeries.SMA(50, 0xFF3FB5BD.toInt()),
                 )
             )
         )

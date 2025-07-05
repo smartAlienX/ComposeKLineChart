@@ -1,8 +1,8 @@
 package com.smartalienx.composeklinechart.datasource
 
-import com.smartalienx.composeklinechart.model.indicator.Indicator
+import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
 
-abstract class IndicatorSeriesDataSource<S : Indicator.Series, D> : IndicatorSeriesSource<S, D> {
+abstract class IndicatorSeriesDataSource<S : IndicatorSeries, D> : IndicatorSeriesSource<S, D> {
 
     protected val dataCacheMap = mutableMapOf<String, List<D?>>()
 

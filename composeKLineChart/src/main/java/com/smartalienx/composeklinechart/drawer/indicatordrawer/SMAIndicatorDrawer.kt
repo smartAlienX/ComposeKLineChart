@@ -17,7 +17,7 @@ import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisDrawer
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisValueConversion
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.Indicator
-import com.smartalienx.composeklinechart.model.indicator.MAIndicator
+import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
 import com.smartalienx.composeklinechart.model.indicator.SMAIndicator
 
 class SMAIndicatorDrawer(
@@ -39,7 +39,7 @@ class SMAIndicatorDrawer(
             val indexStart = canvasParams.getIndexStart()
             val indexEnd = canvasParams.getIndexEnd()
 
-            val seriesData = dataSource.getSeriesData<MAIndicator.Series, SeriesData>(Indicator.Series.SMA, indicator.series, indexStart, indexEnd)
+            val seriesData = dataSource.getSeriesData<IndicatorSeries.SMA, SeriesData>(indicator.series, indexStart, indexEnd)
             val values = seriesData?.values?.flatten()?.mapNotNull { it?.value }
             val yMaxValue = values?.maxOrNull() ?: 0f
             val yMinValue = values?.minOrNull() ?: 0f
@@ -55,7 +55,7 @@ class SMAIndicatorDrawer(
     override fun onDraw(canvas: Canvas, rect: Rect, xAxisTimeConversion: XAxisTimeConversion, indicator: SMAIndicator, config: ChartConfig, canvasParams: CanvasParams, dataSource: KLineDataSource) {
         val indexStart = canvasParams.getIndexStart()
         val indexEnd = canvasParams.getIndexEnd()
-        val seriesData = dataSource.getSeriesData<MAIndicator.Series, SeriesData>(Indicator.Series.SMA, indicator.series, indexStart, indexEnd)
+        val seriesData = dataSource.getSeriesData<IndicatorSeries.SMA, SeriesData>(indicator.series, indexStart, indexEnd)
 
         val yAxisValueConversion = (if (indicator.isAddToMainChart) mainYAxisValueConversion else yAxisDrawer)
             ?: return

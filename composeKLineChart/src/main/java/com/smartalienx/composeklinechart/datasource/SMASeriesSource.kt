@@ -2,11 +2,11 @@ package com.smartalienx.composeklinechart.datasource
 
 import android.util.Log
 import com.smartalienx.composeklinechart.model.BarData
-import com.smartalienx.composeklinechart.model.indicator.MAIndicator
+import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
 
-class SMASeriesSource : IndicatorSeriesDataSource<MAIndicator.Series, SeriesData>() {
+class SMASeriesSource : IndicatorSeriesDataSource<IndicatorSeries.SMA, SeriesData>() {
 
-    override fun calculate(seriesList: List<MAIndicator.Series>, dataList: List<BarData>) {
+    override fun calculate(seriesList: List<IndicatorSeries.SMA>, dataList: List<BarData>) {
 
         var nowTime = System.currentTimeMillis()
 
