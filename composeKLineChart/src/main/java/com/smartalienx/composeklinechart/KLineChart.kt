@@ -1,8 +1,6 @@
 package com.smartalienx.composeklinechart
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,14 +13,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.smartalienx.composeklinechart.datasource.ChartDataManager
-import com.smartalienx.composeklinechart.drawer.CanvasDrawer
 import com.smartalienx.composeklinechart.drawer.CanvasParams
 import com.smartalienx.composeklinechart.drawer.IndicatorsDrawerFactory
 import com.smartalienx.composeklinechart.drawer.MainChartDrawer
@@ -30,9 +26,7 @@ import com.smartalienx.composeklinechart.drawer.TimeAxisDrawer
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis.TimeAxisHelper
 import com.smartalienx.composeklinechart.drawer.indicatordrawer.IndicatorCanvasDrawer
 import com.smartalienx.composeklinechart.drawer.indicatordrawer.MainIndicatorCanvasDrawer
-import com.smartalienx.composeklinechart.drawer.indicatordrawer.SMAIndicatorDrawer
 import com.smartalienx.composeklinechart.extension.calculate
-import com.smartalienx.composeklinechart.extension.detectDragFlingGesture
 import com.smartalienx.composeklinechart.extension.detectTouchGesture
 import com.smartalienx.composeklinechart.model.BarData
 import com.smartalienx.composeklinechart.model.TimeInterval
@@ -215,7 +209,17 @@ fun KLineChartPreview() {
                     IndicatorSeries.SMA(50, 0xFF3FB5BD.toInt()),
                 )
             ),
-            VolumeIndicator()
+            VolumeIndicator(),
+            SMAIndicator(
+                isAddToMainChart = false,
+                series = listOf(
+                    IndicatorSeries.SMA(1, 0xFFFF337C.toInt()),
+                    IndicatorSeries.SMA(5, 0xFFF69234.toInt()),
+                    IndicatorSeries.SMA(10, 0xFF83BD3F.toInt()),
+                    IndicatorSeries.SMA(30, 0xFF6200EE.toInt()),
+                    IndicatorSeries.SMA(50, 0xFF3FB5BD.toInt()),
+                )
+            )
         )
     )
 }
