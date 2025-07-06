@@ -109,7 +109,7 @@ class CanvasParams(val density: Float) {
         val fractionalOffset = offsetCount - floor(offsetCount)
         val candleXOffset = fractionalOffset * candleWidth
 
-        val realVisibleCount = indexEnd - indexStart
+        val realVisibleCount = indexEnd - indexStart    // Actual display data count,
         startX = width - realVisibleCount * candleWidth
 
         startX += if (movingDistance < 0) movingDistance else candleXOffset

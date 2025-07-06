@@ -184,7 +184,7 @@ fun KLineChart(
 @Composable
 @Preview
 fun KLineChartPreview() {
-    val sampleData = List(100) { index ->
+    val sampleData = List(100000) { index ->
 
         val high = Random.nextInt(100) + 50
 
