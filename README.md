@@ -19,10 +19,5 @@
 |                | 买卖点绘制                    | ❌ 未开始                |
 |                | 指标计算优化（IO线程 / 分步计算）      | ❌ 未开始                |
 
-### 效果
-<video src="doc/557_1751764366.mp4" controls width="600">
-  您的浏览器不支持 video 标签。
-</video>
-
-
-▶️ [点击观看效果演示](doc/557_1751764366.mp4)
+### 10万数据效果
+https://github.com/user-attachments/assets/b75cd95d-3713-41e7-a9f0-403591094e25
