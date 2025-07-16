@@ -9,7 +9,7 @@ import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisValueC
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.Indicator
 
-interface IndicatorCanvasDrawer<I : Indicator> {
+interface IndicatorCanvasDrawer<I : Indicator> : YAxisValueConversion {
 
     abstract fun onPreDraw(rect: Rect, xAxisTimeConversion: XAxisTimeConversion, indicator: I, config: ChartConfig, canvasParams: CanvasParams, dataSource: KLineDataSource)
 

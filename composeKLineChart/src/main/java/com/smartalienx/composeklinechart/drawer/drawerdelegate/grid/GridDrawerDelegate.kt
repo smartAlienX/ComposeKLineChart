@@ -19,8 +19,8 @@ interface GridDrawerDelegate {
         rect: Rect,
         xAxisTimeConversion: XAxisTimeConversion,
         yAxisValueConversion: YAxisValueConversion,
-        canvasParams: CanvasParams, gridConfig:
-        ChartConfig.Grid,
+        canvasParams: CanvasParams,
+        gridConfig: ChartConfig.Grid,
         timeAxisConfig: ChartConfig.TimeAxis,
         yAxisConfig: ChartConfig.YAxis
     )

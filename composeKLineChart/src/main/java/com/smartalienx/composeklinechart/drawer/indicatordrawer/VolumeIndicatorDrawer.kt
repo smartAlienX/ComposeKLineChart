@@ -14,6 +14,7 @@ import com.smartalienx.composeklinechart.drawer.drawerdelegate.grid.GridDrawerDe
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis.XAxisTimeConversion
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.DefaultYAxisDrawer
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisDrawerDelegate
+import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisValueConversion
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
 import com.smartalienx.composeklinechart.model.indicator.VolumeIndicator
@@ -21,7 +22,7 @@ import com.smartalienx.composeklinechart.model.indicator.VolumeIndicator
 class VolumeIndicatorDrawer(
     private val yAxisDrawer: YAxisDrawerDelegate = DefaultYAxisDrawer(),
     private val gridDrawer: GridDrawerDelegate = DefaultGridDrawer(),
-) : IndicatorCanvasDrawer<VolumeIndicator> {
+) : IndicatorCanvasDrawer<VolumeIndicator>, YAxisValueConversion by yAxisDrawer {
 
     private val paint by lazy { Paint() }
 
@@ -33,12 +34,12 @@ class VolumeIndicatorDrawer(
         val seriesData = dataSource.getSeriesData<IndicatorSeries.Volume, SeriesData>(indicator.series, indexStart, indexEnd)
         val values = seriesData?.values?.flatten()?.mapNotNull { it?.value }
         val yMaxValue = (values?.maxOrNull() ?: 0f)
-        val yMinValue = (values?.minOrNull()  ?: 0f)
+        val yMinValue = (values?.minOrNull() ?: 0f)
 
         yAxisDrawer.setYAxisRange(rect.top, rect.bottom)
         yAxisDrawer.setYAxisMinMaxValue(
             minValue = 0f,
-            maxValue = (yMaxValue*1.1f).toInt().toFloat()
+            maxValue = (yMaxValue * 1.1f).toInt().toFloat()
         )
     }
 

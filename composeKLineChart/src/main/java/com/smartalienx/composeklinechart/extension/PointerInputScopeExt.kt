@@ -1,5 +1,6 @@
 package com.smartalienx.composeklinechart.extension
 
+import android.util.Log
 import androidx.compose.animation.SplineBasedFloatDecayAnimationSpec
 import androidx.compose.animation.core.animateDecay
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -13,6 +14,8 @@ import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.Density
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 suspend fun PointerInputScope.detectDragFlingGesture(
@@ -78,6 +81,8 @@ suspend fun PointerInputScope.detectTouchGesture(
         val decay = SplineBasedFloatDecayAnimationSpec(density = density)
         val velocityTracker = VelocityTracker()
 
+        var longPressJob: Job? = null
+
         fun PointerInputChange.isLongPressed(): Boolean {
             return uptimeMillis - previousUptimeMillis > viewConfiguration.longPressTimeoutMillis
         }
@@ -91,6 +96,8 @@ suspend fun PointerInputScope.detectTouchGesture(
 
                 // press cancel
                 if (pointer.pressed.not()) {
+
+                    longPressJob?.cancel()
                     onCancel?.invoke()
 
                     val velocity = velocityTracker.calculateVelocity().x
@@ -110,32 +117,31 @@ suspend fun PointerInputScope.detectTouchGesture(
                     break
                 }
 
-                if (pointer.pressed && pointer.previousPressed.not()) {
-                    onStart?.invoke(pointer.position)
-                }
-
                 if (pointer.pressed && pointer.previousPressed.not()) { // first press
                     onStart?.invoke(pointer.position)
 
                     velocityTracker.resetTracking()
-                    velocityTracker.addPosition(
-                        System.currentTimeMillis(),
-                        pointer.position
-                    )
+                    velocityTracker.addPosition(System.currentTimeMillis(), pointer.position)
 
-                } else if (pointer.previousPressed && pointer.isLongPressed()) { // long press
-                    longPressed = true
-                    onLongPress?.invoke(pointer.position)
+                    longPressJob = scope.launch {
+                        delay(viewConfiguration.longPressTimeoutMillis)
+                        longPressed = true
+                        onLongPress?.invoke(pointer.position)
+                    }
+
                 } else if (longPressed && pointer.previousPressed) { // long press drag
-                    onDrag?.invoke(pointer.positionChange())
+                    longPressJob?.cancel()
+                    onLongPressDrag?.invoke(pointer.position)
                 } else if (pointer.previousPressed) { // normal drag
+                    longPressJob?.cancel()
                     onDrag?.invoke(pointer.positionChange())
 
                     velocityTracker.addPosition(
                         pointer.uptimeMillis,
                         pointer.position
                     )
-                } else { // single click
+                } else { // single
+                    longPressJob?.cancel()
                     onClick?.invoke(pointer.position)
                 }
             } else if (pointerEvent.changes.size == 2) {

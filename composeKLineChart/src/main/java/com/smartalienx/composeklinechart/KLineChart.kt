@@ -8,10 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
@@ -22,15 +25,14 @@ import com.smartalienx.composeklinechart.datasource.ChartDataManager
 import com.smartalienx.composeklinechart.drawer.CanvasParams
 import com.smartalienx.composeklinechart.drawer.IndicatorsDrawerFactory
 import com.smartalienx.composeklinechart.drawer.MainChartDrawer
-import com.smartalienx.composeklinechart.drawer.TimeAxisDrawer
+import com.smartalienx.composeklinechart.drawer.drawerdelegate.crosshairs.DefaultCrossHairsDrawer
+import com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis.TimeAxisDrawer
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis.TimeAxisHelper
 import com.smartalienx.composeklinechart.drawer.indicatordrawer.IndicatorCanvasDrawer
 import com.smartalienx.composeklinechart.drawer.indicatordrawer.MainIndicatorCanvasDrawer
 import com.smartalienx.composeklinechart.extension.calculate
 import com.smartalienx.composeklinechart.extension.detectTouchGesture
 import com.smartalienx.composeklinechart.model.BarData
-import com.smartalienx.composeklinechart.model.TimeInterval
-import com.smartalienx.composeklinechart.model.charttype.ChartType
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.Indicator
 import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
@@ -41,38 +43,27 @@ import kotlin.random.Random
 @Composable
 fun KLineChart(
     modifier: Modifier = Modifier,
-    chartType: ChartType = ChartType.Candle,
-    timeInterval: TimeInterval = TimeInterval.Minute(1),
     chartConfig: ChartConfig = ChartConfig(),
     dataList: List<BarData>,
     indicators: List<Indicator> = emptyList(),
-    indicatorDrawerBuilder: ((indicator: Indicator) -> IndicatorCanvasDrawer<*>)? = null
+    indicatorDrawerBuilder: ((indicator: Indicator) -> IndicatorCanvasDrawer<*>)? = null,
+    onCrossHairsChange: (Offset?, time: Long?) -> Unit = { _, _ -> }
 ) {
 
     val density = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
-    val canvasParams = remember {
-        CanvasParams(density.density).apply {
-            updateDataCount(dataList.size)
-        }
-    }
+
     var movingDistanceChange by remember { mutableFloatStateOf(0f) }
     var scaleChange by remember { mutableFloatStateOf(1f) }
+    var crossHairsPoint by remember { mutableStateOf<Offset?>(null) }
 
-    val dataManager = remember {
-        ChartDataManager().apply {
-            updateKLineData(dataList)
-            calculate(indicators)
-        }
-    }
-    val indicatorsDrawerFactory = remember {
-        IndicatorsDrawerFactory(indicatorDrawerBuilder).apply {
-            setupIndicators(indicators)
-        }
-    }
+    val canvasParams = rememberCanvasParams(dataList.size)
+    val dataManager = rememberChartDataManager(dataList, indicators)
+    val indicatorsDrawerFactory = rememberIndicatorsDrawerFactory(indicators, indicatorDrawerBuilder)
     val mainChartDrawer = remember { MainChartDrawer() }
     val timeAxisHelper = remember { TimeAxisHelper() }
     val timeAxisDrawer = remember { TimeAxisDrawer() }
+    val crossHairsDrawer = remember { DefaultCrossHairsDrawer() }
 
     LaunchedEffect(dataList, indicators) {
         dataManager.updateKLineData(dataList)
@@ -83,12 +74,20 @@ fun KLineChart(
         indicatorsDrawerFactory.setupIndicators(indicators)
     }
 
+    LaunchedEffect(crossHairsPoint) {
+        val time = crossHairsPoint?.x?.let {
+            timeAxisHelper.xToTime(it)
+        }
+        onCrossHairsChange.invoke(crossHairsPoint, time)
+    }
+
     Box(
         modifier = modifier
     ) {
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
+                .clipToBounds()
                 .pointerInput(Unit) {
                     detectTouchGesture(
                         scope = coroutineScope,
@@ -102,9 +101,17 @@ fun KLineChart(
                         onZoom = { zoom ->
                             scaleChange = zoom
                         },
+                        onLongPress = {
+                            crossHairsPoint = it
+                        },
+                        onLongPressDrag = {
+                            val clampedY = it.y.coerceIn(0f, canvasParams.getHeight())
+                            crossHairsPoint = it.copy(y = clampedY)
+                        },
                         onCancel = {
                             movingDistanceChange = 0f
                             scaleChange = 0f
+                            crossHairsPoint = null
                         }
                     )
                 }
@@ -116,19 +123,21 @@ fun KLineChart(
 
             timeAxisHelper.calculate(canvasParams, dataList)
 
-            mainChartDrawer.setChartType(chartType)
             mainChartDrawer.setMainIndicators(indicators.filter { it.isAddToMainChart })
 
-            val subCharts = indicators.filter { !it.isAddToMainChart }
+            val subIndicators = indicators.filter { !it.isAddToMainChart }
+            val mainIndicators = indicators.filter { it.isAddToMainChart }
             val timeAxisHeight = chartConfig.timeAxis.heightDp * canvasParams.density
-            val mainHeight = (size.height - timeAxisHeight) / (1 + subCharts.size * chartConfig.subChartScale)
+            val mainHeight = (size.height - timeAxisHeight) / (1 + subIndicators.size * chartConfig.subChartScale)
             val subChartHeight = mainHeight * chartConfig.subChartScale
 
-            val mainRect = Rect(left = 0f, top = 0f, right = size.width, bottom = mainHeight)
+            val contentRect = Rect(left = 0f, top = 0f, right = size.width, bottom = size.height)
+            val mainRect = contentRect.copy(bottom = mainHeight)
             val timeAxisRect = mainRect.copy(top = mainRect.bottom, bottom = mainRect.bottom + timeAxisHeight)
             val subChartRect = timeAxisRect.copy(top = timeAxisRect.bottom, bottom = timeAxisRect.bottom + subChartHeight)
             val subChartRectMap = mutableMapOf<Indicator, Rect>()
-            indicators.filter { it.isAddToMainChart.not() }.forEachIndexed { index, indicator ->
+
+            subIndicators.forEachIndexed { index, indicator ->
                 subChartRectMap[indicator] = subChartRect.copy(
                     top = subChartRect.top + index * subChartHeight,
                     bottom = subChartRect.bottom + index * subChartHeight
@@ -138,7 +147,7 @@ fun KLineChart(
             mainChartDrawer.onPreDraw(mainRect, timeAxisHelper, chartConfig, canvasParams, dataManager)
             timeAxisDrawer.onPreDraw(timeAxisRect, timeAxisHelper, chartConfig, canvasParams, dataManager)
 
-            indicators.filter { it.isAddToMainChart }.forEach { indicator ->
+            mainIndicators.forEach { indicator ->
                 val indicatorDrawer = indicatorsDrawerFactory.getIndicatorsDrawer(indicator)
                     ?: return@forEach
                 if (indicatorDrawer is MainIndicatorCanvasDrawer) {
@@ -147,7 +156,7 @@ fun KLineChart(
                 }
             }
 
-            indicators.filter { it.isAddToMainChart.not() }.forEach { indicator ->
+            subIndicators.forEach { indicator ->
                 val rect = subChartRectMap[indicator] ?: return@forEach
                 indicatorsDrawerFactory.getIndicatorsDrawer(indicator)?.onPreDraw(rect, timeAxisHelper, indicator, chartConfig, canvasParams, dataManager)
             }
@@ -157,7 +166,7 @@ fun KLineChart(
                 mainChartDrawer.onDraw(canvas, mainRect, timeAxisHelper, chartConfig, canvasParams, dataManager)
                 timeAxisDrawer.onDraw(canvas, timeAxisRect, timeAxisHelper, chartConfig, canvasParams, dataManager)
 
-                indicators.filter { it.isAddToMainChart }.forEach { indicator ->
+                mainIndicators.forEach { indicator ->
                     val indicatorDrawer = indicatorsDrawerFactory.getIndicatorsDrawer(indicator)
                         ?: return@forEach
                     if (indicatorDrawer is MainIndicatorCanvasDrawer) {
@@ -166,13 +175,67 @@ fun KLineChart(
                     }
                 }
 
-                indicators.filter { it.isAddToMainChart.not() }.forEach { indicator ->
+                subIndicators.forEach { indicator ->
                     val rect = subChartRectMap[indicator] ?: return@forEach
                     indicatorsDrawerFactory.getIndicatorsDrawer(indicator)?.onDraw(canvas, rect, timeAxisHelper, indicator, chartConfig, canvasParams, dataManager)
+                }
+
+                // show crossHairs
+                val crossHairsY = crossHairsPoint?.y
+                if (crossHairsY != null && chartConfig.crossHairs.isShow) {
+                    val yAxisValueConversion = if (crossHairsY in mainRect.top..mainRect.bottom) {
+                        mainChartDrawer
+                    } else {
+                        subChartRectMap.entries
+                            .firstOrNull { (_, rect) ->
+                                crossHairsY in rect.top..rect.bottom
+                            }?.key?.let {
+                                indicatorsDrawerFactory.getIndicatorsDrawer(it)
+                            }
+                    }
+                    crossHairsDrawer.onDraw(canvas, contentRect, timeAxisRect, crossHairsPoint, timeAxisHelper, yAxisValueConversion, canvasParams, chartConfig)
                 }
             }
         }
     }
+}
+
+@Composable
+private fun rememberCanvasParams(initDataSize: Int = 0): CanvasParams {
+    return CanvasParams(LocalDensity.current.density).apply {
+        updateDataCount(initDataSize)
+    }
+}
+
+@Composable
+private fun rememberChartDataManager(
+    initDataList: List<BarData>,
+    initIndicators: List<Indicator> = emptyList(),
+): ChartDataManager {
+    return remember {
+        ChartDataManager().apply {
+            updateKLineData(initDataList)
+            calculate(initIndicators)
+        }
+    }
+}
+
+@Composable
+private fun rememberIndicatorsDrawerFactory(
+    initIndicators: List<Indicator> = emptyList(),
+    indicatorDrawerBuilder: ((indicator: Indicator) -> IndicatorCanvasDrawer<*>)? = null
+): IndicatorsDrawerFactory {
+    return remember {
+        IndicatorsDrawerFactory(indicatorDrawerBuilder).apply {
+            setupIndicators(initIndicators)
+        }
+    }
+}
+
+private fun Map<Indicator, Rect>.findByY(y: Float): Indicator? {
+    return entries.firstOrNull { (_, rect) ->
+        y in rect.top..rect.bottom
+    }?.key
 }
 
 @Composable
@@ -194,8 +257,8 @@ fun KLineChartPreview() {
     }.sortedBy { it.time }
     KLineChart(
         modifier = Modifier
-            .padding(vertical = 100.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(vertical = 100.dp, horizontal = 16.dp),
         dataList = sampleData,
         chartConfig = ChartConfig(),
         indicators = listOf(

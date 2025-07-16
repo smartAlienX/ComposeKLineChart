@@ -16,14 +16,13 @@ import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.DefaultYAxi
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisDrawerDelegate
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisValueConversion
 import com.smartalienx.composeklinechart.model.config.ChartConfig
-import com.smartalienx.composeklinechart.model.indicator.Indicator
 import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
 import com.smartalienx.composeklinechart.model.indicator.SMAIndicator
 
 class SMAIndicatorDrawer(
     private val yAxisDrawer: YAxisDrawerDelegate = DefaultYAxisDrawer(),
     private val gridDrawer: GridDrawerDelegate = DefaultGridDrawer(),
-) : MainIndicatorCanvasDrawer<SMAIndicator> {
+) : MainIndicatorCanvasDrawer<SMAIndicator>, YAxisValueConversion by yAxisDrawer {
 
     private var mainYAxisValueConversion: YAxisValueConversion? = null
 

@@ -29,8 +29,9 @@ class TimeAxisHelper : XAxisTimeConversion {
         for (i in canvasParams.indexRange) {
             if (i !in dataList.indices) continue
             val time = dataList[i].time
-            timeToXMap[time] = x + candleUnit / 2
-            xToTimeMap[x] = time
+            val centerX = x + candleUnit / 2
+            timeToXMap[time] = centerX
+            xToTimeMap[centerX] = time
             x += candleUnit
         }
     }

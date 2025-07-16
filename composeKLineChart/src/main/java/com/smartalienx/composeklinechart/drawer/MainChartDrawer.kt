@@ -11,7 +11,7 @@ import com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis.XAxisTim
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.DefaultYAxisDrawer
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisDrawerDelegate
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisMinMaxValue
-import com.smartalienx.composeklinechart.model.charttype.ChartType
+import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisValueConversion
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.Indicator
 
@@ -19,10 +19,9 @@ class MainChartDrawer(
     val yAxisDrawer: YAxisDrawerDelegate = DefaultYAxisDrawer(),
     private val gridDrawer: GridDrawerDelegate = DefaultGridDrawer(),
     private val candlesDrawerDelegate: CandlesDrawerDelegate = DefaultCandlesDrawer()
-) : CanvasDrawer, YAxisMinMaxValue {
+) : CanvasDrawer, YAxisMinMaxValue, YAxisValueConversion by yAxisDrawer {
 
     private var indicatorList: List<Indicator> = emptyList()
-    private var chartType: ChartType = ChartType.Candle
 
     private var yMaxValue: Float = Float.MIN_VALUE
     private var yMinValue: Float = Float.MAX_VALUE
@@ -30,10 +29,6 @@ class MainChartDrawer(
     fun setMainIndicators(indicators: List<Indicator>) {
         if (indicators == indicatorList) return
         indicatorList = indicators.filter { it.isAddToMainChart }
-    }
-
-    fun setChartType(chartType: ChartType) {
-        this.chartType = chartType
     }
 
     override fun onPreDraw(rect: Rect, xAxisTimeConversion: XAxisTimeConversion, config: ChartConfig, canvasParams: CanvasParams, dataSource: KLineDataSource) {

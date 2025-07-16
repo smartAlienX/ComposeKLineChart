@@ -1,13 +1,13 @@
-package com.smartalienx.composeklinechart.drawer
+package com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis
 
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.nativeCanvas
 import com.smartalienx.composeklinechart.datasource.KLineDataSource
-import com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis.TimeAxisHelper
-import com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis.XAxisTimeConversion
+import com.smartalienx.composeklinechart.drawer.CanvasDrawer
+import com.smartalienx.composeklinechart.drawer.CanvasParams
+import com.smartalienx.composeklinechart.drawer.indexRange
 import com.smartalienx.composeklinechart.extension.getTextHeight
-import com.smartalienx.composeklinechart.model.BarData
 import com.smartalienx.composeklinechart.model.TimeInterval
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import kotlin.math.ceil
