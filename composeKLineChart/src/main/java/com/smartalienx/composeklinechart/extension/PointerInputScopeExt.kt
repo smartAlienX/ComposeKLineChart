@@ -145,6 +145,7 @@ suspend fun PointerInputScope.detectTouchGesture(
                     onClick?.invoke(pointer.position)
                 }
             } else if (pointerEvent.changes.size == 2) {
+                longPressJob?.cancel()
                 onZoom?.invoke(pointerEvent.calculateZoom())
             }
         }

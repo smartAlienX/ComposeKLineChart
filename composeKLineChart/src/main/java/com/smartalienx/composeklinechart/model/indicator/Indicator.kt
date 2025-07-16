@@ -12,6 +12,8 @@ interface Indicator {
 
     val yAxisConfig: ChartConfig.YAxis
 
+    val topSpaceDp: Float
+
     companion object {
         const val SMA = "Indicator-SMA"
         const val VOLUME = "Indicator-VOL"
