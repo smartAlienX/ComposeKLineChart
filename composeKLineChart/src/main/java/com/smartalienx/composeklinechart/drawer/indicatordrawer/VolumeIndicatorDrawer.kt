@@ -15,6 +15,7 @@ import com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis.XAxisTim
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.DefaultYAxisDrawer
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisDrawerDelegate
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisValueConversion
+import com.smartalienx.composeklinechart.extension.setYAxisRangeWithSpace
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
 import com.smartalienx.composeklinechart.model.indicator.VolumeIndicator
@@ -36,10 +37,10 @@ class VolumeIndicatorDrawer(
         val yMaxValue = (values?.maxOrNull() ?: 0f)
         val yMinValue = (values?.minOrNull() ?: 0f)
 
-        yAxisDrawer.setYAxisRange(rect.top, rect.bottom)
+        yAxisDrawer.setYAxisRangeWithSpace(rect, indicator.spaceDp, canvasParams.density)
         yAxisDrawer.setYAxisMinMaxValue(
             minValue = 0f,
-            maxValue = (yMaxValue * 1.1f).toInt().toFloat()
+            maxValue = (yMaxValue).toInt().toFloat()
         )
     }
 
@@ -61,12 +62,6 @@ class VolumeIndicatorDrawer(
 
             dataList.filterNotNull().forEachIndexed { i, point ->
                 val x = xAxisTimeConversion.timeToX(point.time) - candleWidth / 2
-                val aa = Rect(
-                    top = yAxisDrawer.valueToY(point.value),
-                    bottom = rect.bottom,
-                    left = x,
-                    right = x + candleWidth
-                )
                 canvas.drawRect(
                     rect = Rect(
                         top = yAxisDrawer.valueToY(point.value),

@@ -5,6 +5,7 @@ import com.smartalienx.composeklinechart.format.DefaultTimeFormat
 import com.smartalienx.composeklinechart.format.DefaultValueFormat
 import com.smartalienx.composeklinechart.format.TimeFormat
 import com.smartalienx.composeklinechart.format.ValueFormat
+import com.smartalienx.composeklinechart.model.SpaceDp
 import com.smartalienx.composeklinechart.model.TimeInterval
 import com.smartalienx.composeklinechart.model.charttype.ChartType
 import java.util.TimeZone
@@ -25,8 +26,7 @@ data class ChartConfig(
 
     data class MainChart(
         val kLineType: KLineType = KLineType.Candle,
-        val topSpaceDp: Float = 20f,
-        val bottomSpaceDp: Float = 20f,
+        val spaceDp: SpaceDp = SpaceDp.mainDefault(),
         val yAxis: YAxis = YAxis()
     )
 

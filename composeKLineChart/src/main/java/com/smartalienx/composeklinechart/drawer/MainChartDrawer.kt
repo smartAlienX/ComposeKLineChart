@@ -12,6 +12,7 @@ import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.DefaultYAxi
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisDrawerDelegate
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisMinMaxValue
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisValueConversion
+import com.smartalienx.composeklinechart.extension.setYAxisRangeWithSpace
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.Indicator
 
@@ -37,10 +38,7 @@ class MainChartDrawer(
         yMaxValue = visibilityDataList.maxOf { it.high }
         yMinValue = visibilityDataList.minOf { it.low }
 
-        val topSpace = config.mainChart.topSpaceDp * canvasParams.density
-        val bottomSpace = config.mainChart.bottomSpaceDp * canvasParams.density
-
-        yAxisDrawer.setYAxisRange(rect.top + topSpace, rect.bottom - bottomSpace)
+        yAxisDrawer.setYAxisRangeWithSpace(rect, config.mainChart.spaceDp, canvasParams.density)
         yAxisDrawer.setYAxisMinMaxValue(
             minValue = yMinValue,
             maxValue = yMaxValue

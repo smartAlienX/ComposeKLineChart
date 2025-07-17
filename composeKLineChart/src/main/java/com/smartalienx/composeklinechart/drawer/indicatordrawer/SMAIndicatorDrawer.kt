@@ -15,6 +15,7 @@ import com.smartalienx.composeklinechart.drawer.drawerdelegate.timeaxis.XAxisTim
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.DefaultYAxisDrawer
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisDrawerDelegate
 import com.smartalienx.composeklinechart.drawer.drawerdelegate.yaxis.YAxisValueConversion
+import com.smartalienx.composeklinechart.extension.setYAxisRangeWithSpace
 import com.smartalienx.composeklinechart.model.config.ChartConfig
 import com.smartalienx.composeklinechart.model.indicator.IndicatorSeries
 import com.smartalienx.composeklinechart.model.indicator.SMAIndicator
@@ -43,7 +44,7 @@ class SMAIndicatorDrawer(
             val yMaxValue = values?.maxOrNull() ?: 0f
             val yMinValue = values?.minOrNull() ?: 0f
 
-            yAxisDrawer.setYAxisRange(rect.top, rect.bottom)
+            yAxisDrawer.setYAxisRangeWithSpace(rect, indicator.spaceDp, canvasParams.density)
             yAxisDrawer.setYAxisMinMaxValue(
                 minValue = yMinValue,
                 maxValue = yMaxValue
@@ -92,7 +93,7 @@ class SMAIndicatorDrawer(
         }
 
         if (indicator.isAddToMainChart.not()) {
-            yAxisDrawer.drawYAxis(canvas, rect, canvasParams, config.mainChart.yAxis, config)
+            yAxisDrawer.drawYAxis(canvas, rect, canvasParams, indicator.yAxisConfig, config)
         }
     }
 }

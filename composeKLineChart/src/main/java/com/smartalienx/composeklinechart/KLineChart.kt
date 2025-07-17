@@ -128,8 +128,7 @@ fun KLineChart(
             val subIndicators = indicators.filter { !it.isAddToMainChart }
             val mainIndicators = indicators.filter { it.isAddToMainChart }
             val timeAxisHeight = chartConfig.timeAxis.heightDp * canvasParams.density
-            val indicatorsSpace = indicators.sumOf { it.topSpaceDp.toDouble() }.toFloat()
-            val mainHeight = (size.height - timeAxisHeight - indicatorsSpace) / (1 + subIndicators.size * chartConfig.subChartScale)
+            val mainHeight = (size.height - timeAxisHeight) / (1 + subIndicators.size * chartConfig.subChartScale)
             val subChartHeight = mainHeight * chartConfig.subChartScale
 
             val contentRect = Rect(left = 0f, top = 0f, right = size.width, bottom = size.height)
@@ -139,9 +138,8 @@ fun KLineChart(
             val subChartRectMap = mutableMapOf<Indicator, Rect>()
 
             subIndicators.forEachIndexed { index, indicator ->
-                val topSpace = indicator.topSpaceDp * density.density
                 subChartRectMap[indicator] = subChartRect.copy(
-                    top = subChartRect.top + topSpace + index * subChartHeight,
+                    top = subChartRect.top + index * subChartHeight,
                     bottom = subChartRect.bottom + index * subChartHeight
                 )
             }
